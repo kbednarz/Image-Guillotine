@@ -1,9 +1,8 @@
-package com.github.kbednarz.imageguillotine.Controller;
+package com.github.kbednarz.imageguillotine.controller;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
