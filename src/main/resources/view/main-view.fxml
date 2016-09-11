@@ -4,10 +4,10 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.github.kbednarz.imageguillotine.controller.MainViewController">
+<VBox fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.kbednarz.imageguillotine.controller.MainViewController">
    <children>
       <MenuBar>
         <menus>
@@ -28,6 +28,10 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ImageView fx:id="imageView" fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
+      <Pane fx:id="imagePane" onMouseDragged="#imagePaneMouseDragListener" onMousePressed="#imagePaneMouseClickListener" prefHeight="378.0" prefWidth="600.0">
+         <children>
+            <ImageView id="imageView" fx:id="imageView" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </Pane>
    </children>
 </VBox>
