@@ -2,8 +2,8 @@ package com.github.kbednarz.imageguillotine.controller;
 
 import com.github.kbednarz.imageguillotine.service.A4PaperSizeService;
 import com.github.kbednarz.imageguillotine.model.ImagePosition;
+import com.github.kbednarz.imageguillotine.service.GenerateGridService;
 import com.github.kbednarz.imageguillotine.service.ImageService;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
@@ -11,14 +11,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
-import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.ImageReadException;
-import org.apache.sanselan.Sanselan;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -31,14 +28,19 @@ public class MainViewController implements Initializable{
     private ImageView imageView;
     @FXML
     private Pane imagePane;
+    @FXML
+    private GridPane imageGrid;
 
     private ImagePosition imagePosition;
+    private double imageScale;
 
     public void initialize(URL location, ResourceBundle resources) {
         imagePosition = new ImagePosition();
 
-        imageView.fitWidthProperty().bind(mainPane.widthProperty());
-        imageView.fitHeightProperty().bind(mainPane.heightProperty());
+        //imageView.fitWidthProperty().bind(imagePane.widthProperty());
+        //imageView.fitHeightProperty().bind(imagePane.heightProperty());
+
+
 
     }
 
@@ -60,10 +62,28 @@ public class MainViewController implements Initializable{
         if(imageService != null) {
             Image fxImage = imageService.getFxImage();
             imageView.setImage(fxImage);
-            A4PaperSizeService paperSizeService = new A4PaperSizeService(fxImage.getWidth(),fxImage.getHeight(),imageService.getDpi());
-            imagePane.setClip(new Rectangle(paperSizeService.getPaneWidth(),paperSizeService.getPaneHeight()));
-        }
+            A4PaperSizeService paperSizeService = new A4PaperSizeService(fxImage.getWidth(), fxImage.getHeight(), imageService.getDpi());
 
+            imageScale = imagePane.getWidth() / paperSizeService.getPaneWidth();
+            imageView.setFitWidth(fxImage.getWidth() * imageScale);
+            imageView.setFitHeight(fxImage.getHeight() * imageScale);
+            imagePane.setClip(new Rectangle(paperSizeService.getPaneWidth() * imageScale, paperSizeService.getPaneHeight() * imageScale));
+
+            imageGrid.setPrefWidth(paperSizeService.getPaneWidth()*imageScale);
+            imageGrid.setPrefHeight(paperSizeService.getPaneHeight()*imageScale);
+
+            GenerateGridService gridService = new GenerateGridService(
+                    paperSizeService.getPaneWidth(),
+                    paperSizeService.getPaneHeight(),
+                    paperSizeService.getWidthInPixels(),
+                    paperSizeService.getHeightInPixels(),
+                    imageScale);
+            imageGrid.getRowConstraints().remove(0);
+            imageGrid.getRowConstraints().addAll(gridService.getRowConstraints());
+            imageGrid.getColumnConstraints().remove(0);
+            imageGrid.getColumnConstraints().addAll(gridService.getColumnConstraints());
+            imageGrid.setVisible(true);
+        }
 
     }
 

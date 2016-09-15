@@ -2,13 +2,21 @@ package com.github.kbednarz.imageguillotine.service;
 
 import java.math.RoundingMode;
 
-public final class A4PaperSizeService {
+public final class A4PaperSizeService implements PaperSizeServiceInterface{
     private final double widthInInches = 8.267;
     private double widthInPixels;
     private final double heightInInches = 11.692;
     private double heightInPixels;
     private double imageWidth,imageHeight,imageDpi;
     private double paneWidth,paneHeight;
+
+    public double getWidthInPixels() {
+        return widthInPixels;
+    }
+
+    public double getHeightInPixels() {
+        return heightInPixels;
+    }
 
     public A4PaperSizeService(double imageWidth, double imageHeight, double imageDpi) {
         this.imageWidth = imageWidth;
