@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -42,17 +43,7 @@
        <Pane fx:id="imagePane" onMouseDragged="#imagePaneMouseDragListener" onMousePressed="#imagePaneMouseClickListener" prefHeight="300.0" prefWidth="400.0" GridPane.rowIndex="1">
          <children>
             <ImageView id="imageView" fx:id="imageView" cache="true" pickOnBounds="true" preserveRatio="true" />
-            <GridPane fx:id="imageGrid" gridLinesVisible="true" mouseTransparent="true" prefHeight="300.0" prefWidth="400.0" visible="false">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-            </GridPane>
+            <Canvas fx:id="gridCanvas" height="200.0" width="200.0" />
          </children>
          <cursor>
             <Cursor fx:constant="OPEN_HAND" />

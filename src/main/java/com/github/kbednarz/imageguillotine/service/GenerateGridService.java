@@ -1,42 +1,42 @@
 package com.github.kbednarz.imageguillotine.service;
 
-import com.sun.rowset.internal.Row;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.RowConstraints;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GenerateGridService {
-    private double paneWidth,paneHeight,paperWidthInPx,paperHeightInPx,scale;
+    private double scale;
+    private GraphicsContext gc;
+    private PaperSizeServiceInterface paperService;
 
-    public GenerateGridService(double paneWidth, double paneHeight, double paperWidthInPx, double paperHeightInPx, double scale) {
-        this.paneWidth = paneWidth;
-        this.paneHeight = paneHeight;
-        this.paperWidthInPx = paperWidthInPx;
-        this.paperHeightInPx = paperHeightInPx;
+    public GenerateGridService(GraphicsContext gc,PaperSizeServiceInterface paperService){
+        this.gc = gc;
+        this.paperService = paperService;
+    }
+
+    public void updateGrid(double scale) {
         this.scale = scale;
+
+        generateRows();
+        generateColumns();
     }
 
-    public List<RowConstraints> getRowConstraints(){
-        List<RowConstraints> listOfRows = new ArrayList<>();
-        int numberOfRows = (int)Math.ceil(paneHeight/paperHeightInPx);
+    private void generateRows(){
+        double rowHeight = paperService.getPageHeightInPx()*scale;
 
-        for(int i=0; i<numberOfRows; i++){
-            RowConstraints row = new RowConstraints(paperHeightInPx*scale);
-            listOfRows.add(row);
+        for (int y=0; y <= paperService.getPaneHeight(); y += rowHeight){
+            gc.strokeLine(0,y,paperService.getPaneWidth(),y);
         }
-        return listOfRows;
     }
 
-    public List<ColumnConstraints> getColumnConstraints(){
-        List<ColumnConstraints> listOfColumns = new ArrayList<>();
-        int numberOfColumns = (int)Math.ceil(paneWidth/paperWidthInPx);
+    private void generateColumns(){
+        double columnWidth = paperService.getPageWidthInPx()*scale;
 
-        for(int i=0; i<numberOfColumns; i++){
-            ColumnConstraints column = new ColumnConstraints(paperWidthInPx*scale);
-            listOfColumns.add(column);
+        for (int x=0; x <= paperService.getPaneWidth(); x += columnWidth){
+            gc.strokeLine(x,0,x,paperService.getPaneHeight());
         }
-        return listOfColumns;
     }
+
 }

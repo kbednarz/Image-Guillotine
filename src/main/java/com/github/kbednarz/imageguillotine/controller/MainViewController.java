@@ -6,12 +6,12 @@ import com.github.kbednarz.imageguillotine.service.GenerateGridService;
 import com.github.kbednarz.imageguillotine.service.ImageService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import org.apache.sanselan.ImageReadException;
@@ -29,17 +29,35 @@ public class MainViewController implements Initializable{
     @FXML
     private Pane imagePane;
     @FXML
-    private GridPane imageGrid;
+    private Canvas gridCanvas;
 
     private ImagePosition imagePosition;
     private double imageScale;
+    private A4PaperSizeService paperSizeService;
+    private Image fxImage;
 
     public void initialize(URL location, ResourceBundle resources) {
         imagePosition = new ImagePosition();
+        gridCanvas.heightProperty().bind(imagePane.heightProperty());
+        gridCanvas.widthProperty().bind(imagePane.widthProperty());
+/*
+        imagePane.widthProperty().addListener((observableValue, oldSceneWidth, newSceneWidth) -> {
+            if (paperSizeService != null) {
+                imageScale = getScale();
+                imageView.setFitWidth(fxImage.getWidth() * imageScale);
+                imageView.setFitHeight(fxImage.getHeight() * imageScale);
 
-        //imageView.fitWidthProperty().bind(imagePane.widthProperty());
-        //imageView.fitHeightProperty().bind(imagePane.heightProperty());
-
+            }
+        });
+        imagePane.heightProperty().addListener((observableValue, oldSceneWidth, newSceneWidth) -> {
+            if (paperSizeService != null) {
+                imageScale = getScale();
+                imageView.setFitWidth(fxImage.getWidth() * imageScale);
+                imageView.setFitHeight(fxImage.getHeight() * imageScale);
+                imageGrid.setPrefWidth(paperSizeService.getPaneWidth() * imageScale);
+                imageGrid.setPrefHeight(paperSizeService.getPaneHeight() * imageScale);
+            }
+        });*/
 
 
     }
@@ -60,29 +78,19 @@ public class MainViewController implements Initializable{
         }
 
         if(imageService != null) {
-            Image fxImage = imageService.getFxImage();
+            fxImage = imageService.getFxImage();
             imageView.setImage(fxImage);
-            A4PaperSizeService paperSizeService = new A4PaperSizeService(fxImage.getWidth(), fxImage.getHeight(), imageService.getDpi());
+            paperSizeService = new A4PaperSizeService(fxImage.getWidth(), fxImage.getHeight(), imageService.getDpi());
 
-            imageScale = imagePane.getWidth() / paperSizeService.getPaneWidth();
+            imageScale = getScale();
+
             imageView.setFitWidth(fxImage.getWidth() * imageScale);
             imageView.setFitHeight(fxImage.getHeight() * imageScale);
             imagePane.setClip(new Rectangle(paperSizeService.getPaneWidth() * imageScale, paperSizeService.getPaneHeight() * imageScale));
 
-            imageGrid.setPrefWidth(paperSizeService.getPaneWidth()*imageScale);
-            imageGrid.setPrefHeight(paperSizeService.getPaneHeight()*imageScale);
+            GenerateGridService gridService = new GenerateGridService(gridCanvas.getGraphicsContext2D(),paperSizeService);
+            gridService.updateGrid(imageScale);
 
-            GenerateGridService gridService = new GenerateGridService(
-                    paperSizeService.getPaneWidth(),
-                    paperSizeService.getPaneHeight(),
-                    paperSizeService.getWidthInPixels(),
-                    paperSizeService.getHeightInPixels(),
-                    imageScale);
-            imageGrid.getRowConstraints().remove(0);
-            imageGrid.getRowConstraints().addAll(gridService.getRowConstraints());
-            imageGrid.getColumnConstraints().remove(0);
-            imageGrid.getColumnConstraints().addAll(gridService.getColumnConstraints());
-            imageGrid.setVisible(true);
         }
 
     }
@@ -99,6 +107,14 @@ public class MainViewController implements Initializable{
     public void imagePaneMouseClickListener(MouseEvent event) {
         if (imageView != null) {
             imagePosition.setDraggedPos(event.getX(), event.getY());
+        }
+    }
+
+    private double getScale(){
+        if (imagePane.getWidth() / paperSizeService.getPaneWidth() < imagePane.getHeight()/paperSizeService.getPaneHeight()){
+            return imagePane.getWidth() / paperSizeService.getPaneWidth();
+        } else {
+            return imagePane.getHeight()/paperSizeService.getPaneHeight();
         }
     }
 

@@ -10,11 +10,11 @@ public final class A4PaperSizeService implements PaperSizeServiceInterface{
     private double imageWidth,imageHeight,imageDpi;
     private double paneWidth,paneHeight;
 
-    public double getWidthInPixels() {
+    public double getPageWidthInPx() {
         return widthInPixels;
     }
 
-    public double getHeightInPixels() {
+    public double getPageHeightInPx() {
         return heightInPixels;
     }
 
