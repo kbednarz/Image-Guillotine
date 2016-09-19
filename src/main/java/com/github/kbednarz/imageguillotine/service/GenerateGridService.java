@@ -18,7 +18,7 @@ public class GenerateGridService {
 
     public void updateGrid(double scale) {
         this.scale = scale;
-
+        gc.clearRect(0,0,gc.getCanvas().getWidth(),gc.getCanvas().getHeight());
         generateRows();
         generateColumns();
     }

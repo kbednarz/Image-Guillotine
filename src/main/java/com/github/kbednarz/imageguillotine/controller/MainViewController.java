@@ -35,31 +35,26 @@ public class MainViewController implements Initializable{
     private double imageScale;
     private A4PaperSizeService paperSizeService;
     private Image fxImage;
+    private GenerateGridService gridService;
+    private  ImageService imageService;
+
 
     public void initialize(URL location, ResourceBundle resources) {
         imagePosition = new ImagePosition();
         gridCanvas.heightProperty().bind(imagePane.heightProperty());
         gridCanvas.widthProperty().bind(imagePane.widthProperty());
-/*
+
         imagePane.widthProperty().addListener((observableValue, oldSceneWidth, newSceneWidth) -> {
-            if (paperSizeService != null) {
-                imageScale = getScale();
-                imageView.setFitWidth(fxImage.getWidth() * imageScale);
-                imageView.setFitHeight(fxImage.getHeight() * imageScale);
+            if (imageService != null) {
+                updateImagePane();
 
             }
         });
         imagePane.heightProperty().addListener((observableValue, oldSceneWidth, newSceneWidth) -> {
-            if (paperSizeService != null) {
-                imageScale = getScale();
-                imageView.setFitWidth(fxImage.getWidth() * imageScale);
-                imageView.setFitHeight(fxImage.getHeight() * imageScale);
-                imageGrid.setPrefWidth(paperSizeService.getPaneWidth() * imageScale);
-                imageGrid.setPrefHeight(paperSizeService.getPaneHeight() * imageScale);
+            if (imageService != null) {
+                updateImagePane();
             }
-        });*/
-
-
+        });
     }
 
     public void loadImage(){
@@ -68,7 +63,6 @@ public class MainViewController implements Initializable{
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("Image files", "*.jpg");
         fileChooser.getExtensionFilters().add(extensionFilter);
         File imageFile = fileChooser.showOpenDialog(null);
-        ImageService imageService = null;
         try {
             imageService = new ImageService(imageFile);
         } catch (IOException e) {
@@ -81,18 +75,10 @@ public class MainViewController implements Initializable{
             fxImage = imageService.getFxImage();
             imageView.setImage(fxImage);
             paperSizeService = new A4PaperSizeService(fxImage.getWidth(), fxImage.getHeight(), imageService.getDpi());
+            gridService = new GenerateGridService(gridCanvas.getGraphicsContext2D(),paperSizeService);
 
-            imageScale = getScale();
-
-            imageView.setFitWidth(fxImage.getWidth() * imageScale);
-            imageView.setFitHeight(fxImage.getHeight() * imageScale);
-            imagePane.setClip(new Rectangle(paperSizeService.getPaneWidth() * imageScale, paperSizeService.getPaneHeight() * imageScale));
-
-            GenerateGridService gridService = new GenerateGridService(gridCanvas.getGraphicsContext2D(),paperSizeService);
-            gridService.updateGrid(imageScale);
-
+            updateImagePane();
         }
-
     }
 
 
@@ -118,4 +104,11 @@ public class MainViewController implements Initializable{
         }
     }
 
+    private void updateImagePane(){
+        imageScale = getScale();
+        imageView.setFitWidth(fxImage.getWidth() * imageScale);
+        imageView.setFitHeight(fxImage.getHeight() * imageScale);
+        gridService.updateGrid(imageScale);
+        imagePane.setClip(new Rectangle(paperSizeService.getPaneWidth() * imageScale, paperSizeService.getPaneHeight() * imageScale));
+    }
 }
